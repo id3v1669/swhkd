@@ -10,7 +10,7 @@ let
   defaultPackage = inputs.self.packages.${system}.default;
 
   inherit (lib) types;
-  inherit (lib.modules) mkIf mkForce;
+  inherit (lib.modules) mkIf;
   inherit (lib.options) mkOption mkEnableOption;
 
   format = pkgs.formats.ini {};
@@ -23,39 +23,36 @@ in {
       default = defaultPackage;
       type = types.package;
     };
-
-    configPath = mkOption {
-      description = "The config path to use for `swhkd`";
-      default = "/etc/swhkd/swhkdrc";
-      type = types.str;
-    };
-
-    target = mkOption {
-      description = "The target to use for `swhkd`";
-      default = "default.target";
-      type = types.str;
-    };
     
     cooldown = mkOption {
       description = "The cooldown to use for `swhkd`";
       default = 250;
       type = types.int;
     };
+
+    settings = mkOption {
+      description = "The config to use for `swhkd` syntax and samples could found in [repo](https://github.com/id3v1669/swhkd).";
+      default = ''
+      super + return
+        alacritty
+      '';
+      type = types.lines;
+    };
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
+    environment.etc."swhkd/swhkdrc".text = cfg.settings;
 
     systemd.user.services.swhkd = {
       description = "Simple Wayland HotKey Daemon";
-      bindsTo = [ "${cfg.target}"];
+      bindsTo = [ "default.target" ];
       script = ''
-        /run/wrappers/bin/pkexec ${cfg.package}/bin/swhkd \
-          --config ${cfg.configPath} \
+        /run/wrappers/bin/pkexec ${cfg.package}/bin/swhkd \ 
           --cooldown ${toString cfg.cooldown}
       '';
       serviceConfig.Restart = "always";
-      wantedBy = [ "${cfg.target}" ];
+      wantedBy = [ "default.target" ];
     };
     security.polkit = {
       enable = true;

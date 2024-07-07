@@ -105,7 +105,10 @@ After importing you should be able to use it in your configuration.nix file:
     enable = true;
     package = inputs.swhkd.packages.${system}.default.override { rfkillFeature = true; };
     cooldown = 300;
-    configPath = "/home/user/.config/swhkd/swhkdrc";
+    settings = ''
+super + return
+  alacritty
+    '';
   };
 }
 ```
