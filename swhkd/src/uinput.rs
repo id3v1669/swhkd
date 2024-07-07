@@ -1,6 +1,6 @@
 use evdev::{
     uinput::{VirtualDevice, VirtualDeviceBuilder},
-    AttributeSet, Key, RelativeAxisType, SwitchType,
+    AttributeSet, Key, RelativeAxisType, SwitchType
 };
 
 #[cfg(feature = "rfkill")]

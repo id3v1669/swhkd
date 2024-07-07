@@ -2,7 +2,7 @@ use clap::Parser;
 use environ::Env;
 use nix::{
     sys::stat::{umask, Mode},
-    unistd::daemon,
+    unistd::daemon
 };
 use std::io::Read;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -11,7 +11,7 @@ use std::{
     fs::OpenOptions,
     os::unix::net::UnixListener,
     path::{Path, PathBuf},
-    process::{exit, id, Command, Stdio},
+    process::{exit, id, Command, Stdio}
 };
 use sysinfo::System;
 

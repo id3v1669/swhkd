@@ -48,7 +48,7 @@ in {
       description = "Simple Wayland HotKey Daemon";
       bindsTo = [ "default.target" ];
       script = ''
-        /run/wrappers/bin/pkexec ${cfg.package}/bin/swhkd \ 
+        /run/wrappers/bin/pkexec ${cfg.package}/bin/swhkd \
           --cooldown ${toString cfg.cooldown}
       '';
       serviceConfig.Restart = "always";

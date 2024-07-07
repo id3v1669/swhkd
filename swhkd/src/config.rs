@@ -3,14 +3,14 @@ use std::collections::HashMap;
 use std::fs;
 use std::{
     fmt,
-    path::{Path, PathBuf},
+    path::{Path, PathBuf}
 };
 
 #[derive(Debug)]
 pub enum Error {
     ConfigNotFound,
     Io(std::io::Error),
-    InvalidConfig(ParseError),
+    InvalidConfig(ParseError)
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -18,7 +18,7 @@ pub enum ParseError {
     // u32 is the line number where an error occured
     UnknownSymbol(PathBuf, u32),
     InvalidModifier(PathBuf, u32),
-    InvalidKeysym(PathBuf, u32),
+    InvalidKeysym(PathBuf, u32)
 }
 
 impl From<std::io::Error> for Error {

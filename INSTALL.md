@@ -1,44 +1,53 @@
 # AUR:
 
-We have packaged `swhkd-git`. `swhkd-bin` has been packaged separately by a user of swhkd.
+This version of package has not been packaged yet.
 
-# NixOS:
+## NixOS
 
-Basic installation and autorun on NixOS
+For now flake users only.
+
+This repo contains a NixOS Module for swhkd service.
+To enable module add an input first and import to modules:
 ```nix
-# Add inputs to your flake
-  inputs.swhkd.url = "github:id3v1669/swhkd";
-  inputs.swhkd.inputs.nixpkgs.follows = "nixpkgs";
-...
-# Add package to your configuration
-  environment.systemPackages = [ inputs.swhkd.packages.${pkgs.hostPlatform.system}.default ];
-...
-# Enable polkit and create rule
-  security.polkit.enable = true;
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-        if (action.id == "com.github.swhkd.pkexec"  &&
-            subject.local == true &&
-            subject.active == true &&) {
-                return polkit.Result.YES;
-        }
-    });
-  '';
-  ...
-# Autorun daemon with systemd
-  systemd.user.services.swhkd = {
-    description = "swhkd hotkey daemon";
-    bindsTo = ["default.target"];
-    script = ''
-      /run/wrappers/bin/pkexec ${inputs.swhkd.packages.${pkgs.hostPlatform.system}.default}/bin/swhkd \
-        --config $XDG_CONFIG_HOME/swhkd/swhkdrc \
-        --cooldown 250
-      '';
-    serviceConfig.Restart = "always";
-    wantedBy = ["default.target"];
-  };
+{
+  inputs = {
+    swhkd.url = "github:id3v1669/swhkd";
+  }
+
+  outputs = {nixpkgs, swhkd, ...} @ inputs: {
+    nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit inputs; };
+      modules = [
+        ./configuration.nix
+        swhkd.nixosModules.default
+      ];
+    };
+  } 
+}
 ```
-After that add 'swhks &' to autorun of your desktop enviroment or window manager
+After importing you should be able to use it in your configuration.nix file:
+```nix
+{ inputs
+, ...
+}:
+{
+  services.swhkd = {
+    enable = true;
+    package = inputs.swhkd.packages.${system}.default.override { rfkillFeature = true; };
+    cooldown = 300;
+    settings = ''
+super + return
+  alacritty
+    '';
+  };
+}
+```
+* rfkill is an potional feature related to [this](https://github.com/waycrate/swhkd/pull/254) pr/discussion
+* Do not forget to start/add to autostart swhkd of your system after login.
+* Replace HOSTNAME with your oun
+
+ps. this module will be updated to support devices and maybe even config, but 
+it is already good enough to use
 
 # Building:
 
