@@ -516,7 +516,7 @@ pub fn create_default_config(invoking_uid: u32, config_file_path: &PathBuf) {
     // Initializes a default SWHKD config at specific config path
 
     perms::raise_privileges();
-    _ = match fs::File::create(&config_file_path) {
+    match fs::File::create(config_file_path) {
         Ok(mut file) => {
             log::debug!("Created default SWHKD config at: {:#?}", config_file_path);
             _ = file.write_all(b"# Comments start with #, uncomment to use \n#start a terminal\n#super + return\n#\talacritty # replace with terminal of your choice");

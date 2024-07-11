@@ -11,6 +11,8 @@ pkgs.mkShell {
     udev
 
     # Tools
+    cargo-audit
+    cargo-deny
     pkg-config
     clippy
     gdb
